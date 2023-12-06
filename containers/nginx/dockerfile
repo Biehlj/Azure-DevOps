@@ -1,0 +1,20 @@
+FROM ubuntu:18.04
+
+RUN apt -y update && apt install -y wget nginx software-properties-common apt-transport-https \
+  && wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
+  && dpkg -i package-microsoft-prod.deb \
+  && add-apt-repository-universe \
+  && apt -y update \
+  && apt install -y dotnet-sdk-3.0
+    
+CMD service nginx start
+
+COPY ./default /etc/nginx/sites-available/default
+
+WORKDIR /app
+
+COPY ./website/. .
+
+EXPOSE 80:8080
+
+ENTRYPOINT ["dotnet", "website.dll"]
